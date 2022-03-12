@@ -34,7 +34,7 @@ from .models import get_user_email
 url_signer = URLSigner(session)
 
 @action('index')
-@action.uses(db, auth, 'index.html')
+@action.uses('index.html', db, auth)
 def index():
     ## TODO: Show to each logged in user the birds they have seen with their count.
     # The table must have an edit button to edit a row, and also, a +1 button to increase the count
