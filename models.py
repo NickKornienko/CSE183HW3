@@ -22,9 +22,9 @@ def get_time():
 
 db.define_table(
     'bird',
-    ### TODO: define the fields that are in the json.
-    Field('bird_count', 'integer'),
-    Field('seen_by', default=get_user_email()),
+    ### TODO: define here any fields you need.
+    ### To help you, here's how to declare the user_email field.
+    Field('user_email', default=get_user_email()),
 )
 
 db.commit()
