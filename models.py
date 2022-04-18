@@ -24,7 +24,7 @@ db.define_table(
     'bird',
     ### TODO: define here any fields you need.
     ### To help you, here's how to declare the user_email field.
-    Field('user_email', default=get_user_email()),
+    Field('user_email', default=get_user_email),
 )
 
 db.commit()
