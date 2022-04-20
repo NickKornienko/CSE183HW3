@@ -25,6 +25,8 @@ session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
 
+from pickle import GET
+
 from py4web import action, request, abort, redirect, URL, Field
 from py4web.utils.form import Form, FormStyleBulma
 from py4web.utils.url_signer import URLSigner
@@ -34,21 +36,44 @@ from . common import db, session, T, cache, auth, signed_url
 
 url_signer = URLSigner(session)
 
+
 @action('index')
 @action.uses('index.html', db, auth)
 def index():
-    ## TODO: Show to each logged in user the birds they have seen with their count.
-    # The table must have an edit button to edit a row, and also, a +1 button to increase the count
-    # by 1 (this needs to be protected by a signed URL).
-    # On top of the table there is a button to insert a new bird.
-    return dict()
+    return dict(
+        rows=db(db.bird.user_email == get_user_email()).select()
+    )
 
-# This is an example only, to be used as inspiration for your code to increment the bird count.
-# Note that the bird_id parameter ...
-@action('capitalize/<bird_id:int>') # the :int means: please convert this to an int.
-@action.uses(db, auth.user, url_signer.verify())
-# ... has to match the bird_id parameter of the Python function here.
-def capitalize(bird_id=None):
+
+@action('edit/<bird_id:int>', method=["GET", "POST"])
+@action.uses('edit.html', url_signer, db, session, auth.user)
+def edit(bird_id=None):
+    assert bird_id is not None
+    p = db.bird[bird_id]
+    if p is None:
+        redirect(URL('index'))
+    form = Form(db.bird, record=p, deletable=False,
+                csrf_session=session, formstyle=FormStyleBulma)
+    if form.accepted:
+        redirect(URL('index'))
+    return dict(form=form)
+
+
+@action('inc/<bird_id:int>')
+@action.uses(db, auth.user)
+def inc(bird_id=None):
     assert bird_id is not None
     bird = db.bird[bird_id]
-    db(db.bird.id == bird_id).update(bird_name=bird.bird_name.capitalize())
+    db(db.bird.id == bird_id).update(n_sightings=bird.n_sightings + 1)
+    redirect(URL('index'))
+
+
+@action('add', method=["GET", "POST"])
+@action.uses('add.html', url_signer, db, session, auth.user)
+def add():
+    form = Form(db.bird, csrf_session=session, formstyle=FormStyleBulma)
+    if form.accepted:
+        redirect(URL('index'))
+    else:
+        print("error")
+    return dict(form=form)
