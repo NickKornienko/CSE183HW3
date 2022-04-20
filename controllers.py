@@ -49,18 +49,21 @@ def index():
 @action.uses('edit.html', url_signer, db, session, auth.user)
 def edit(bird_id=None):
     assert bird_id is not None
+
     p = db.bird[bird_id]
     if p is None:
         redirect(URL('index'))
+    if p.user_email != get_user_email():
+        redirect(URL('index'))
+
     form = Form(db.bird, record=p, deletable=False,
                 csrf_session=session, formstyle=FormStyleBulma)
     if form.accepted:
         redirect(URL('index'))
     return dict(form=form)
 
-
 @action('inc/<bird_id:int>')
-@action.uses(db, auth.user)
+@action.uses(db, auth.user, url_signer)
 def inc(bird_id=None):
     assert bird_id is not None
     bird = db.bird[bird_id]
