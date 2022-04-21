@@ -19,20 +19,16 @@ def get_time():
     return datetime.datetime.utcnow()
 
 
-# Define your table below
-#
-# db.define_table('thing', Field('name'))
-#
-# always commit your models to avoid problems later
-
 db.define_table(
     'bird',
-    Field('bird_name', requires=IS_NOT_EMPTY()),
+    Field('bird', requires=IS_NOT_EMPTY()),
     Field('weight', 'integer', requires=IS_NOT_EMPTY()),
     Field('diet', requires=IS_NOT_EMPTY()),
     Field('habitat', requires=IS_NOT_EMPTY()),
     Field('n_sightings', 'integer', default=1),
     Field('user_email', default=get_user_email)
 )
+
+db.bird.id.readable = db.bird.id.writable = False
 
 db.commit()
