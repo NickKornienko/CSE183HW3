@@ -28,7 +28,7 @@ def get_time():
 db.define_table(
     'bird',
     Field('bird_name', requires=IS_NOT_EMPTY()),
-    Field('weight', 'integer', default=0),
+    Field('weight', 'integer', requires=IS_NOT_EMPTY()),
     Field('diet', requires=IS_NOT_EMPTY()),
     Field('habitat', requires=IS_NOT_EMPTY()),
     Field('n_sightings', 'integer', default=1),

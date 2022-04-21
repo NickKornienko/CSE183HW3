@@ -62,8 +62,9 @@ def edit(bird_id=None):
         redirect(URL('index'))
     return dict(form=form)
 
+
 @action('inc/<bird_id:int>')
-@action.uses(db, auth.user, url_signer)
+@action.uses(db, auth.user, session, url_signer)
 def inc(bird_id=None):
     assert bird_id is not None
     bird = db.bird[bird_id]
@@ -77,6 +78,4 @@ def add():
     form = Form(db.bird, csrf_session=session, formstyle=FormStyleBulma)
     if form.accepted:
         redirect(URL('index'))
-    else:
-        print("error")
     return dict(form=form)
